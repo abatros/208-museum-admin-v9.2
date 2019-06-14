@@ -221,6 +221,9 @@ async function main() {
   let constructeur_ctx =null;
 
   err_Count =0;
+  let etime =0;
+  let commit_Count =0;
+
   for (let it of yaml_data) {
     const {xid, title, name} = it;
 
@@ -250,7 +253,10 @@ async function main() {
       it.description = new_checksum;
 
       //console.log(it)
-      await commit_catalog(it);
+      const retv = await commit_catalog(it);
+      etime += retv.etime;
+      commit_Count +=1;
+      //console.log(`commit etime:${retv.etime}`)
       break;
 
       case 'constructeur':
@@ -278,6 +284,7 @@ async function main() {
   } // each item in Yaml.
 
   console.log(`done processing ${yaml_data.length} items in YAML err_Count:${err_Count}`)
+  console.log(`average commit time ${etime/commit_Count}`)
 
   // -------------------------------------------------------------------------
 
