@@ -15,6 +15,7 @@ const assert = require('assert');
 //var find = require('find');
 var find = require('find-promise');
 const pdfjsLib = require('pdfjs-dist');
+const yaml = require('js-yaml');
 
 //const api = require('./lib/openacs-api')
 //const {_assert, xnor_name} = require('./lib/openacs-api');
@@ -59,10 +60,28 @@ if (!instance_name) {
   process.exit(-1)
 }
 
+let {pdf_paths} = yaml.safeLoad(fs.readFileSync(instance_name+'.yaml-config', 'utf8'));
 
-require('./lib/109-mk-pdf-pages.js')({
+if (!pdf_paths) {
+  console.log(`
+    *********************************
+    NO pdf_paths specified.
+    exit.
+    *********************************
+    `);
+  process.exit(-1)
+}
+
+
+
+const results = require('./lib/109-mk-pdf-pages.js')({
   pg_monitor,
-  instance_name, ipath,
+  instance_name,
+  ipath, // ltree
+  pdf_paths,
   verbose,
   pdf_root_folder
 });
+
+
+console.log(`Entering mode async.`)
